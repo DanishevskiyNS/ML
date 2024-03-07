@@ -4,7 +4,6 @@ import numpy as np
 from sklearn.cluster import KMeans
 from sklearn.cluster import DBSCAN
 from sklearn.cluster import AgglomerativeClustering
-from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import f1_score
 
 from utils.plotter import Plotter
@@ -43,8 +42,7 @@ def main(path: str):
     data = pd.read_csv(path, names=header)
     X = data.iloc[:, :-1].values
     y = data.iloc[:, -1].map(mapping_enc).values
-    # Scaling.
-    X_s = StandardScaler().fit_transform(X)
+
     # Hyperparameters.
     hyper = {
         "KMeans": {
@@ -100,16 +98,13 @@ def main(path: str):
         print_f1_scores(y, hc_clusters)
 
         # Plotting 2d scatterplots for very feature pair.
-        cl_plotter = Plotter(X_s, y, hc_clusters, header, cfg["name"])
-        # cl_plotter.saveall_2d_scatter()
+        cl_plotter = Plotter(X, y, hc_clusters, header, cfg["name"])
+        cl_plotter.saveall_2d_scatter()
 
         if cfg["name"] == "Hierarchical":
             model = algorithm.fit(X)
             cl_plotter.plot_dendrogram(model, truncate_mode="level", p=3)
             cl_plotter.save_to_file("../output/Hierarchical/dendrogram.png")
-
-
-
 
 
 if __name__ == "__main__":
